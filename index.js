@@ -1,9 +1,12 @@
 'use strict';
 const url = require('url');
-const punycode = require('punycode');
+
+const qs = require('querystring');
 const queryString = require('query-string');
+
 const prependHttp = require('prepend-http');
 const sortKeys = require('sort-keys');
+const punycode = require('./node_modules/punycode');
 
 const DEFAULT_PORTS = {
 	'http:': 80,
@@ -82,7 +85,12 @@ module.exports = (str, opts) => {
 
 	// Decode URI octets
 	if (urlObj.pathname) {
-		urlObj.pathname = decodeURI(urlObj.pathname);
+		try {
+			urlObj.pathname = decodeURI(urlObj.pathname);
+		} catch (e) {
+			// Console.log(e.message);
+			urlObj.pathname = qs.unescape(urlObj.pathname);
+		}
 	}
 
 	// Remove directory index
